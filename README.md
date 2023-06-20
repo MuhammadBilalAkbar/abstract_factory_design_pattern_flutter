@@ -114,8 +114,270 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Definition
 
+Provide an interface for creating families of related or dependent objects without specifying their
+concrete classes.
+
+Abstract Factory is a creational design pattern, also known as Kit is more flexible and suits the
+structure of big projects better than the Factory Method design pattern.
+
+The main purpose of the Abstract Factory design pattern is to encapsulate creating a family of
+objects in a separate factory object, hence abstracting the process of object creation.
+
 ## Analysis
+
+- Abstract Factory — declares an interface of operations that create abstract Product objects.
+- Concrete Factory — implements the operations to create Concrete Product objects. **Each Concrete
+  Factory corresponds only to a single variant of products.**
+- Product — declares an interface for a type of Product object.
+- Concrete Product — implements the Product interface and defines a product object to be created by
+  the corresponding Concrete Factory.
+- Client — uses only interfaces declared by the Abstract Factory and Product classes.
+
+The usage of the Abstract Factory design pattern should be considered when a system’s code needs to
+work with various families of related objects (products), but it should not depend on the concrete
+classes of those products, or on how they are created, composed and represented.
 
 ## Implementation
 
-1. In `log_level.dart` file, define LogLevel enum:
+1. In `platform_indicator.dart` contains abstract class PlatformIndicator with its factory
+   constructor.
+
+Factory constructor uses switch cases statement to call AndroidIndicator and IOSIndicator.
+
+It has `activityProgressIndicator()` and `color()` methods which will be called where it is
+implemented.
+
+AndroidIndicator is returning `CircularProgressIndicator` and IOSIndicator is
+returning `CupertinoActivityIndicator` and `color()` method is used inside them.
+
+As they are implementing `PlatformIndicator` class so they will override color and
+activityProgressIndicator methods.
+
+```dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+abstract interface class PlatformIndicator {
+  Color color();
+
+  Widget activityProgressIndicator();
+
+  factory PlatformIndicator(TargetPlatform platform) {
+    switch (platform) {
+      case TargetPlatform.android:
+        return AndroidIndicator();
+      case TargetPlatform.iOS:
+        return IOSIndicator();
+      default:
+        return AndroidIndicator();
+    }
+  }
+}
+
+class AndroidIndicator implements PlatformIndicator {
+  @override
+  Widget activityProgressIndicator() =>
+      CircularProgressIndicator(
+        color: color(),
+      );
+
+  @override
+  Color color() => Colors.blue;
+}
+
+class IOSIndicator implements PlatformIndicator {
+  @override
+  Widget activityProgressIndicator() =>
+      CupertinoActivityIndicator(
+        color: color(),
+      );
+
+  @override
+  Color color() => Colors.red;
+}
+```
+
+2. In `platform_button.dart` contains abstract class PlatformButton with its factory constructor.
+
+   Factory constructor uses switch cases statement to call AndroidButton and IOSButton.
+
+   It has `buildButton(VoidCallback onPressed, Widget child)` method which will be called where it
+   is implemented.
+
+   AndroidButton is returning `ElevatedButton` and IOSButton is returning `CupertinoButton.filled`.
+
+   As they are implementing `PlatformButton` class so they will override buildButton
+   method. `onPressed` and `child` will be provided on client side(in UI i.e., HomePage).
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+abstract interface class PlatformButton {
+  Widget buildButton(VoidCallback onPressed, Widget child);
+
+  factory PlatformButton(TargetPlatform platform) {
+    switch (platform) {
+      case TargetPlatform.android:
+        return AndroidButton();
+      case TargetPlatform.iOS:
+        return IOSButton();
+      default:
+        return AndroidButton();
+    }
+  }
+}
+
+class AndroidButton implements PlatformButton {
+  @override
+  Widget buildButton(VoidCallback onPressed, Widget child) =>
+      ElevatedButton(
+        onPressed: onPressed,
+        child: child,
+      );
+}
+
+class IOSButton implements PlatformButton {
+  @override
+  Widget buildButton(VoidCallback onPressed, Widget child) =>
+      CupertinoButton.filled(
+        onPressed: onPressed,
+        child: child,
+      );
+}
+```
+
+3. `platform_slider.dart` contains abstract class PlatformSlider with its factory constructor.
+
+   Factory constructor uses switch cases statement to call AndroidSlider and IOSSlider.
+
+   It has `buildSlider(double value, ValueSetter<double> onChanged)` method which will be called
+   where it is implemented.
+
+   AndroidSlider is returning `Slider` and IOSSlider is returning `CupertinoSlider`.
+
+   As they are implementing `PlatformSlider` class so they will override buildSlider
+   method. `value` and `onChanged` will be provided on client side(in UI i.e., HomePage).
+
+```dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+abstract interface class PlatformSlider {
+  Widget buildSlider(double value, ValueSetter<double> onChanged);
+
+  factory PlatformSlider(TargetPlatform platform) {
+    switch (platform) {
+      case TargetPlatform.android:
+        return AndroidSlider();
+      case TargetPlatform.iOS:
+        return IOSSlider();
+      default:
+        return AndroidSlider();
+    }
+  }
+}
+
+class AndroidSlider implements PlatformSlider {
+  @override
+  Widget buildSlider(double value, ValueSetter<double> onChanged) =>
+      Slider(
+        value: value,
+        onChanged: onChanged,
+        max: 100,
+        divisions: 10,
+      );
+}
+
+class IOSSlider implements PlatformSlider {
+  @override
+  Widget buildSlider(double value, ValueSetter<double> onChanged) =>
+      CupertinoSlider(
+        value: value,
+        onChanged: onChanged,
+        max: 100,
+        divisions: 10,
+      );
+}
+```
+
+4. `abstract_factory.dart` is an abstract class and has three methods to override where it is
+   implemented.
+    - buildButton(BuildContext context, String text, VoidCallback onPressed),
+    - Widget buildIndicator(BuildContext context), and
+    - buildSlider(BuildContext context, double value, ValueSetter<double> onChanged)
+
+   Another class named `AbstractFactoryImplementation` is created, it
+   implements `AbstractFactory` and overrides the buildButton, buildIndicator and buildSlider
+   methods.
+
+```dart
+import 'package:abstract_factory_design_pattern_flutter/platform_button.dart';
+import 'package:abstract_factory_design_pattern_flutter/platform_indicator.dart';
+import 'package:abstract_factory_design_pattern_flutter/platform_slider.dart';
+import 'package:flutter/material.dart';
+
+abstract interface class AbstractFactory {
+  Widget buildButton(BuildContext context, String text, VoidCallback onPressed);
+
+  Widget buildIndicator(BuildContext context);
+
+  Widget buildSlider(BuildContext context, double value, ValueSetter<double> onChanged);
+}
+
+class AbstractFactoryImplementation implements AbstractFactory {
+  @override
+  Widget buildButton(BuildContext context, String text, VoidCallback onPressed) =>
+      PlatformButton(Theme
+          .of(context)
+          .platform).buildButton(
+        onPressed,
+        Text(text),
+      );
+
+  @override
+  Widget buildIndicator(BuildContext context) =>
+      PlatformIndicator(Theme
+          .of(context)
+          .platform).activityProgressIndicator();
+
+  @override
+  Widget buildSlider(BuildContext context, double value, ValueSetter<double> onChanged) =>
+      PlatformSlider(Theme
+          .of(context)
+          .platform).buildSlider(
+        value,
+        onChanged,
+      );
+}
+```
+
+5. `home_page.dart` is client side code for abstract factory design pattern method. Its column
+   inside the body contains the following code:
+
+```dart 
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AbstractFactoryImplementation()
+                .buildButton(context, 'Hello', () {}),
+            const SizedBox(height: 10),
+            AbstractFactoryImplementation().buildIndicator(context),
+            AbstractFactoryImplementation().buildSlider(
+              context,
+              currentSliderValue,
+              (newValue) {
+                setState(() {
+                  currentSliderValue = newValue;
+                  debugPrint(newValue.toString());
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+```
+
+button, slider and indicator all are called here through the abstract factory class which is factory
+of factories(platform_button, platform_indicator, platform_slider).
