@@ -1,4 +1,4 @@
-import 'package:abstract_factory_design_pattern_flutter/abstract_factory.dart';
+import 'package:abstract_factory_design_pattern_flutter/user_interface_factory.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,11 +19,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AbstractFactoryImplementation()
+            UserInterface()
                 .buildButton(context, 'Hello', () {}),
             const SizedBox(height: 10),
-            AbstractFactoryImplementation().buildIndicator(context),
-            AbstractFactoryImplementation().buildSlider(
+            UserInterface().buildIndicator(context),
+            UserInterface().buildSlider(
               context,
               currentSliderValue,
               (newValue) {

@@ -3,7 +3,7 @@ import 'package:abstract_factory_design_pattern_flutter/platform_indicator.dart'
 import 'package:abstract_factory_design_pattern_flutter/platform_slider.dart';
 import 'package:flutter/material.dart';
 
-abstract interface class AbstractFactory {
+abstract interface class UserInterfaceFactory {
   Widget buildButton(BuildContext context, String text, VoidCallback onPressed);
 
   Widget buildIndicator(BuildContext context);
@@ -12,7 +12,7 @@ abstract interface class AbstractFactory {
       BuildContext context, double value, ValueSetter<double> onChanged);
 }
 
-class AbstractFactoryImplementation implements AbstractFactory {
+class UserInterface implements UserInterfaceFactory {
   @override
   Widget buildButton(
           BuildContext context, String text, VoidCallback onPressed) =>
